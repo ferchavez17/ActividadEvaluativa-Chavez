@@ -64,7 +64,7 @@ function draw() {
     colorrojo = color(0, 255, 0); // Cambiar 
     bandera = false;
   } else {
-    colorrojo = color(250, 0, 0);
+    colorrojo = color(255, 0, 0);
     bandera = true;
   }
   
