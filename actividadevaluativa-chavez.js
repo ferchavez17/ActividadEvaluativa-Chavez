@@ -1,26 +1,22 @@
-//declaracion de variables
+// Declaración de variables
 let circulorojoX, circuloazulX, circulorojoY, circuloazulY;
-//velocidades de los círculos en las direcciones X e Y.
-let velocidadrojoX, velocidadazulX, velocidadrojoY,velocidadazulY;
-//colores de los círculos.
+let velocidadrojoX, velocidadazulX, velocidadrojoY, velocidadazulY;
 let colorrojo, colorazul;
-// bandera: ha ocurrido una colisión entre los círculos.
 let banderacolision = false;
-//guarda el tiempo de la colisión en milisegundos.
 let tiempodecolision;
-//bandera para cambiar los colores de los círculos.
-let bandera = true;
+let banderaRojo = true;
+let banderaAzul = true;
 
 function setup() {
   createCanvas(600, 600);
   circulorojoX = width / 4;
-  cirucuoazulX = 3 * width / 4;
-  circulorojoY = height / 4; 
+  circuloazulX = 3 * width / 4;
+  circulorojoY = height / 4;
   circuloazulY = 3 * height / 4;
   velocidadrojoX = 3;
   velocidadazulX = 2;
   velocidadrojoY = 4;
-  velocidadazulY = 5;
+  velocidadazulY = 2;
   colorrojo = color(255, 0, 0);
   colorazul = color(0, 0, 255);
 }
@@ -28,14 +24,13 @@ function setup() {
 function draw() {
   background(220);
   
-  //posiciones de los círculos
+  // Actualizar posiciones de los círculos
   circulorojoX += velocidadrojoX;
   circuloazulX += velocidadazulX;
   circulorojoY += velocidadrojoY;
   circuloazulY += velocidadazulY;
 
-
- // Comprobar colisiones con las paredes
+  // Comprobar colisiones con las paredes
   if (circulorojoX < 20 || circulorojoX > width - 20) {
     velocidadrojoX *= -1;
   } 
@@ -43,36 +38,58 @@ function draw() {
     velocidadazulX *= -1;
   }
 
-  if (circulorojoY < 20 || circulorojoY > height - 20) {
-    velocodadrojoY *= -1;
-  } 
-  
-    if (circuloazulY < 20 || circuloazulY > height - 20) {
-    velocodadazulY *= -1;
-  } 
-  
-     // Verificar colisión con el piso o el techo
-  if (circuloazulY >= height - 20 && bandera == true) {
-   colorazul = color(0, 255, 0); // Cambiar 
-      bandera = false;
-  } else {
-    circuloazul = color(0, 0, 255); 
-    bandera == true;
+  if (circulorojoY < 20) {
+    velocidadrojoY *= -1;
+    if (banderaRojo) {
+      colorrojo = color(random(255), random(255), random(255));
+      banderaRojo = false;
+    }
+  } else if (circulorojoY > height - 20) {
+    banderaRojo = true;
   }
   
-   if (circulorojoY < 20 && bandera == true ) {
-    colorrojo = color(0, 255, 0); // Cambiar 
-    bandera = false;
-  } else {
-    colorrojo = color(255, 0, 0);
-    bandera = true;
+  if (circuloazulY > height - 20) {
+    velocidadazulY *= -1;
+    if (banderaAzul) {
+      colorazul = color(random(255), random(255), random(255));
+      banderaAzul = false;
+    }
+  } else if (circuloazulY < 20) {
+    banderaAzul = true;
   }
-  
+
+  // Verificar colisión entre los círculos
+  let distancia = dist(circulorojoX, circulorojoY, circuloazulX, circuloazulY);
+  if (distancia < 40) {
+    if (!banderacolision) {
+      velocidadrojoX *= -1;
+      velocidadrojoY *= -1;
+      velocidadazulX *= -1;
+      velocidadazulY *= -1;
+      colorrojo = color(128, 0, 128);
+      colorazul = color(128, 0, 128);
+      tiempodecolision = millis();
+      banderacolision = true;
+    }
+  }
+
+  // Controlar el cambio de color post-colisión
+  if (banderacolision) {
+    let tiempoActual = millis();
+    if (tiempoActual - tiempodecolision > 1500) {
+      colorrojo = color(255, 0, 0);
+      colorazul = color(0, 0, 255);
+      banderacolision = false;
+    } else {
+      let factor = (tiempoActual - tiempodecolision) / 1500;
+      colorrojo = lerpColor(color(128, 0, 128), color(255, 0, 0), factor);
+      colorazul = lerpColor(color(128, 0, 128), color(0, 0, 255), factor);
+    }
+  }
 
   // Dibujar los círculos
   fill(colorrojo);
   ellipse(circulorojoX, circulorojoY, 40, 40);
   fill(colorazul);
-  ellipse(circuloazulX,circuloazulY, 40, 40);
-
+  ellipse(circuloazulX, circuloazulY, 40, 40);
 }
